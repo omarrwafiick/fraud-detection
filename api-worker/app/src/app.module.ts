@@ -6,6 +6,7 @@ import { GraphModule } from './graph/graph.module';
 import { AlertsModule } from './alerts/alerts.module';
 import { CasesModule } from './cases/cases.module';
 import { JwtAuthGuard } from './shared/guards/jwtAuth.guard';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { JwtAuthGuard } from './shared/guards/jwtAuth.guard';
     GraphModule, 
     AlertsModule, 
     CasesModule,
+    AuthModule,
     JwtAuthGuard,
   ],
   controllers: [],
