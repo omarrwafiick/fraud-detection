@@ -1,8 +1,9 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Request, Response, UseGuards } from '@nestjs/common';
 import { IngestionService } from './ingestion.service';
 import { ApiKeyGuard } from './guards/ApiKey.guard';
 import { IngestTransactionDto } from './dtos/ingestTransaction.dto';
 import { ApiService } from '../api/api.service';
+import * as express from 'express';
 
 @Controller('ingestion')
 export class IngestionController {
@@ -19,7 +20,10 @@ export class IngestionController {
 
     @Post("transaction/sync-check")
     @UseGuards(ApiKeyGuard)
-    async syncCheckTransaction(@Request() request: Request, @Body() payload: IngestTransactionDto){
-        return await this.apiService.handleV1Calls('POST', request);
+    async syncCheckTransaction(
+        @Request() request: express.Request, 
+        @Response() response: express.Response, 
+        @Body() payload: IngestTransactionDto){
+        return await this.apiService.handleRerouting('POST', request, response);
     }
 }

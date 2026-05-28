@@ -31,10 +31,4 @@ export class AuthController {
     logout(){
 
     }
-
-    @Get("api-key")
-    @UseGuards(IsUserGuard)
-    async generateApiKey(){
-
-    }
 }
