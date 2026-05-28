@@ -20,7 +20,7 @@ enum TriggerType{
 }
 
 @Entity('cases')
-export class CaseEntity {
+export class Case {
   @PrimaryGeneratedColumn()
   id: number;
 
