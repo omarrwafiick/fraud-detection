@@ -1,6 +1,12 @@
 import { Tenant } from 'src/tenant/entities/tenant.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, JoinColumn, Index } from 'typeorm';
 
+enum RuleSeverity {
+  'MEDIUM', 
+  'HIGH',
+  'CRITICAL'
+}
+
 @Entity('rules')
 export class Rule {
   @PrimaryGeneratedColumn()
@@ -17,7 +23,7 @@ export class Rule {
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
-  @Column({ type: 'varchar', length: 20, default: 'HIGH' })
+  @Column({ type: 'enum',  enum: RuleSeverity, default: RuleSeverity.HIGH })
   severity: RuleSeverity;
 
   @Column({ type: 'boolean', default: true })
@@ -28,10 +34,4 @@ export class Rule {
 
   @UpdateDateColumn()
   updatedAt: Date;
-}
-
-enum RuleSeverity {
-  'MEDIUM', 
-  'HIGH',
-  'CRITICAL'
 }

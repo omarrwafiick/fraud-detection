@@ -1,6 +1,24 @@
 import { Tenant } from 'src/tenant/entities/tenant.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, JoinColumn, Index } from 'typeorm';
 
+enum CaseStatus {
+    'OPEN'='OPEN',
+    'INVESTIGATING'='INVESTIGATING', 
+    'RESOLVED'='RESOLVED',
+    'DISMISSED'='DISMISSED',
+}
+
+enum CaseSeverity {
+    'MEDIUM'='MEDIUM', 
+    'HIGH'='HIGH',
+    'CRITICAL'='CRITICAL',
+}
+
+enum TriggerType{
+    'CYCLIC_TRANSFER_DETECTION'='CYCLIC_TRANSFER_DETECTION',
+    'CUSTOM_RULE_VIOLATION'='CUSTOM_RULE_VIOLATION',
+}
+
 @Entity('cases')
 export class CaseEntity {
   @PrimaryGeneratedColumn()
@@ -14,13 +32,13 @@ export class CaseEntity {
   @JoinColumn({ name: 'tenantId' })
   tenant: Tenant;
 
-  @Column({ type: 'varchar', length: 20, default: 'OPEN' })
+  @Column({ type: 'enum', enum: CaseStatus, default: CaseStatus.OPEN })
   status: CaseStatus;
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'enum', enum: CaseSeverity, default: CaseSeverity.HIGH })
   severity: CaseSeverity;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'enum', enum: TriggerType, default: TriggerType.CYCLIC_TRANSFER_DETECTION })
   triggerType: TriggerType; 
 
   @Column({ type: 'varchar' })
@@ -37,22 +55,4 @@ export class CaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
-}
-
-enum CaseStatus {
-    'OPEN',
-    'INVESTIGATING', 
-    'RESOLVED',
-    'DISMISSED',
-}
-
-enum CaseSeverity {
-    'MEDIUM', 
-    'HIGH',
-    'CRITICAL'
-}
-
-enum TriggerType{
-    'CYCLIC_TRANSFER_DETECTION',
-    'CUSTOM_RULE_VIOLATION',
 }

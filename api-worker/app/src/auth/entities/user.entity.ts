@@ -10,6 +10,12 @@ import {
   JoinColumn 
 } from 'typeorm';
 
+
+enum Role {
+  'ANALYST'='ANALYST',
+  'ADMIN'='ADMIN'
+}
+
 @Entity('users')
 @Index(['tenantId', 'email'], { unique: true })
 export class UserEntity {
@@ -35,7 +41,7 @@ export class UserEntity {
   @Column({ type: 'varchar', length: 255 })
   passwordHash: string;
 
-  @Column({ type: 'varchar', length: 30, default: 'ANALYST' })
+  @Column({ type: 'enum', enum: Role, default: Role.ANALYST })
   role: Role;
 
   @CreateDateColumn()
@@ -43,9 +49,4 @@ export class UserEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
-}
-
-enum Role {
-  'ANALYST',
-  'ADMIN'
 }
