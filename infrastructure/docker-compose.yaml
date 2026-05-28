@@ -8,7 +8,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./reverse-proxy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
