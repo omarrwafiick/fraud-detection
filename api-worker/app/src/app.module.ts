@@ -6,16 +6,34 @@ import { GraphModule } from './graph/graph.module';
 import { AlertsModule } from './alerts/alerts.module';
 import { CasesModule } from './cases/cases.module';
 import { JwtAuthGuard } from './shared/guards/jwtAuth.guard';
+import { AuthModule } from './auth/auth.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'node:path';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     RulesModule, 
     AnalyticsModule, 
     TenantModule, 
     GraphModule, 
     AlertsModule, 
     CasesModule,
+    AuthModule,
     JwtAuthGuard,
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DATABASE_HOST || 'localhost',
+      port: Number(process.env.DATABASE_PORT) || 3306,
+      username: process.env.DATABASE_USERNAME || 'root',
+      password: process.env.DATABASE_PW || 'root',
+      database: process.env.DATABASE_NAME || 'test',
+      entities: [join(__dirname, '**', '*.model.{ts,js}')],
+      synchronize: process.env.ENV_MODE === 'development',
+    }),
   ],
   controllers: [],
   providers: [],
