@@ -1,22 +1,26 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { WinstonModule, WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
+import { WinstonModule } from 'nest-winston';
 import { loggerConfig } from './common/logger.config';
 import { GatewayLoggingInterceptor } from './common/interceptor/gatewayLogging.interceptor';
+import { GatewayExceptionFilter } from './common/filters/gateway-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger(loggerConfig),
   });
 
+  configLogger(app);
   configPipes(app);
+  configFilters(app);
 
   const port = process.env.PORT || 3000;
 
   await app.listen(port);
-
-  await configLogger(app);
+  
+  const logger = new Logger('BOOTSTRAP');
+  logger.log(`Ingress Gateway successfully running on port: ${port}`);
 }
 
 function configPipes(app: INestApplication<any>){
@@ -30,12 +34,12 @@ function configPipes(app: INestApplication<any>){
   );
 }
 
-async function configLogger(app: INestApplication<any>){
+function configLogger(app: INestApplication<any>){
   app.useGlobalInterceptors(new GatewayLoggingInterceptor());
+}
 
-  const logger = app.get(WINSTON_MODULE_NEST_PROVIDER);
-  
-  logger.log(`Application running dynamically on: ${await app.getUrl()}`);
+function configFilters(app: INestApplication<any>){
+  app.useGlobalFilters(new GatewayExceptionFilter());
 }
 
 bootstrap();
