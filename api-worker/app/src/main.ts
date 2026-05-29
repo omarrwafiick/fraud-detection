@@ -25,6 +25,7 @@ function configPipes(app: INestApplication<any>){
 }
 
 function configPrivateAccess(app: INestApplication<any>){
+  // Allow only access to gateway api
   app.useGlobalGuards(new InternalTrafficGuard());
   app.enableCors({
     origin: process.env.GATEWAY_ORIGIN || 'http://localhost:3000',
