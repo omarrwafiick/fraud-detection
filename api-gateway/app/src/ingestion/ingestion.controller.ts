@@ -4,7 +4,16 @@ import { ApiKeyGuard } from './guards/ApiKey.guard';
 import { IngestTransactionDto } from './dtos/ingestTransaction.dto';
 import { ApiService } from '../api/api.service';
 import * as express from 'express';
+import { Throttle } from '@nestjs/throttler';
 
+@Throttle(
+    { 
+        default: {
+            ttl: 60000, // 1 minute
+            limit: 3, // 3 requests per minute
+        } 
+    }
+)
 @Controller('ingestion')
 export class IngestionController {
     constructor(

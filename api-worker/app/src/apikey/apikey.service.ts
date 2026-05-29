@@ -11,7 +11,8 @@ export class ApikeyService {
 
         if(!hasKey){
             const newKey = this.generateKey();
-            await this.redisInstance.set(key, newKey);
+            // Key will automatically expire in 7 days (604,800 seconds)
+            await this.redisInstance.set(key, newKey, { EX: 604800 });
             return { key: newKey };
         }
         
