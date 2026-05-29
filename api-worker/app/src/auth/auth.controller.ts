@@ -8,7 +8,6 @@ import { SignUpUserDto } from './dtos/signup.dto';
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
-        
     ){}
 
     @Post("login")
@@ -23,11 +22,13 @@ export class AuthController {
     }
 
     @Get("refresh")
+    @UseGuards(IsUserGuard)
     async refresh(){
 
     }
 
     @Post("logout")
+    @UseGuards(IsUserGuard)
     logout(){
 
     }

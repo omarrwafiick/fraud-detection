@@ -2,8 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
-import { loggerConfig } from './common/logger.config';
-import { GatewayLoggingInterceptor } from './common/interceptor/gatewayLogging.interceptor';
+import { loggerConfig } from './common/logger/logger.config';
+import { GatewayLoggingInterceptor } from './common/interceptors/gatewayLogging.interceptor';
 import { GatewayExceptionFilter } from './common/filters/gateway-exception.filter';
 
 async function bootstrap() {

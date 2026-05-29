@@ -1,16 +1,31 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { InternalTrafficGuard } from './shared/guards/internal-traffic.guard';
+import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
+import { InternalTrafficGuard } from './common/guards/internal-traffic.guard';
+import { WorkerExceptionFilter } from './common/filters/worker-exception.filter';
+import { WorkerLoggingInterceptor } from './common/interceptors/workerLogging.interceptor';
+import { WinstonModule } from 'nest-winston';
+import { loggerConfig } from './common/logger/logger.config';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: WinstonModule.createLogger(loggerConfig),
+  });
 
+  configLogger(app);
   configPipes(app);
-
+  configFilters(app);
   configPrivateAccess(app);
+  configKafkaConsumer(app);
+
+  const port = process.env.PORT || 3001;
+
+  await app.startAllMicroservices();
+  await app.listen(port);
   
-  await app.listen(process.env.PORT ?? 3001);
+  const logger = new Logger('BOOTSTRAP');
+  logger.log(`Api-Worker running as a hybrid engine on port: ${port} [Kafka Consumer Active]`);
 }
 
 function configPipes(app: INestApplication<any>){
@@ -31,6 +46,29 @@ function configPrivateAccess(app: INestApplication<any>){
     origin: process.env.GATEWAY_ORIGIN || 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
+  });
+}
+
+function configLogger(app: INestApplication<any>){
+  app.useGlobalInterceptors(new WorkerLoggingInterceptor());
+}
+
+function configFilters(app: INestApplication<any>){
+  app.useGlobalFilters(new WorkerExceptionFilter());
+}
+
+function configKafkaConsumer(app: INestApplication<any>){
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        brokers: [process.env.KAFKA_BROKER || 'localhost:9092'],
+      },
+      consumer: {
+        groupId: 'fraud-worker-consumer-group',
+        allowAutoTopicCreation: true,
+      },
+    },
   });
 }
 

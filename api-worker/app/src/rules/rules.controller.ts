@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, UseInterceptors } from '@nestjs/common';
 import { RulesService } from './rules.service';
-import { JwtAuthGuard } from 'src/shared/guards/jwtAuth.guard';
+import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { CreateRuleDto } from './dtos/createRule.dto';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @UseGuards(JwtAuthGuard)
 @Controller('rules')
+@UseInterceptors(CacheInterceptor)
 export class RulesController {
     constructor(private readonly rulesService: RulesService){}
 

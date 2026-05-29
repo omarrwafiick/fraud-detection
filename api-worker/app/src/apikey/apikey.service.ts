@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'node:crypto';
-import { RedisInstance } from 'src/shared/redis/redis.client';
+import { RedisInstance } from 'src/common/redis/redis.client';
 
 @Injectable()
 export class ApikeyService {

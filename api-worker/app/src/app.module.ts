@@ -5,13 +5,17 @@ import { TenantModule } from './tenant/tenant.module';
 import { GraphModule } from './graph/graph.module';
 import { AlertsModule } from './alerts/alerts.module';
 import { CasesModule } from './cases/cases.module';
-import { JwtAuthGuard } from './shared/guards/jwtAuth.guard';
+import { JwtAuthGuard } from './common/guards/jwtAuth.guard';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'node:path';
 import { ConfigModule } from '@nestjs/config';
 import { SyncCheckModule } from './sync-check/sync-check.module';
 import { ApikeyModule } from './apikey/apikey.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { EvaluationModule } from './evaluation/evaluation.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -20,12 +24,11 @@ import { ApikeyModule } from './apikey/apikey.module';
     }),
     RulesModule, 
     AnalyticsModule, 
-    TenantModule, 
+    TenantModule,
     GraphModule, 
     AlertsModule, 
     CasesModule,
     AuthModule,
-    JwtAuthGuard,
     ApikeyModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -38,9 +41,25 @@ import { ApikeyModule } from './apikey/apikey.module';
       synchronize: process.env.ENV_MODE === 'development',
     }),
     SyncCheckModule,
+    ThrottlerModule.forRoot([{
+      ttl: 60000, // 1 minute
+      limit: 10,   // 10 requests per minute globally
+    }]),
+    EvaluationModule,
+    CacheModule.register({
+      ttl: 5000, // Time-to-live in milliseconds
+      max: 1000, // Maximum number of items in cache
+      isGlobal: true, // Makes CacheModule available everywhere without re-importing
+    }),
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    JwtAuthGuard,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
   exports: [JwtAuthGuard]
 })
 export class AppModule {}
