@@ -7,7 +7,7 @@ import { WorkerLoggingInterceptor } from './common/interceptors/workerLogging.in
 import { WinstonModule } from 'nest-winston';
 import { loggerConfig } from './common/logger/logger.config';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

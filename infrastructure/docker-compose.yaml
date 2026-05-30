@@ -1,7 +1,5 @@
-version: '3.8'
-
 services:
-  nginx:
+  nginxv:
     image: nginx:alpine
     container_name: fraud_nginx
     restart: always
@@ -62,3 +60,7 @@ services:
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  fraud-network:
+    driver: bridge

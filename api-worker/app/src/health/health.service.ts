@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Kafka } from '@nestjs/microservices/external/kafka.interface';
+//import { Kafka } from '@nestjs/microservices/external/kafka.interface';
 import { HealthCheckError, HealthIndicator, HealthIndicatorResult } from '@nestjs/terminus';
 import { RedisInstance } from 'src/common/redis/redis.client';
 
@@ -24,28 +24,37 @@ export class RedisHealthService extends HealthIndicator {
   }
 }
 
-@Injectable()
-export class KafkaHealthService extends HealthIndicator {
-  private kafka = new Kafka({
-    clientId: 'health-check',
-    brokers: [process.env.KAFKA_BROKER || 'localhost:9092'],
-  });
+// @Injectable()
+// export class KafkaHealthService extends HealthIndicator implements OnModuleInit, OnModuleDestroy {
+//   private kafka: Kafka;
+//   private admin: Admin;
 
-  async isHealthy(): Promise<HealthIndicatorResult> {
-    let admin = this.kafka.admin();
-    try {
-      await admin.connect();
+//   onModuleInit() {
+//     this.kafka = new Kafka({
+//       clientId: 'api-worker-health-monitor',
+//       brokers: [process.env.KAFKA_BROKER || 'localhost:9092'],
+//     });
+//     this.admin = this.kafka.admin();
+//   }
 
-      await admin.fetchTopicMetadata();
+//   async isHealthy(): Promise<HealthIndicatorResult> {
+//     try {
+//       await this.admin.connect();
+//       await this.admin.fetchTopicMetadata();
 
-      return this.getStatus(KafkaHealthService.name, true);
-    } catch (error) {
-      throw new HealthCheckError(
-        'Kafka check failed',
-        this.getStatus(KafkaHealthService.name, false),
-      );
-    }finally {
-      await admin.disconnect();
-    }
-  }
-}
+//       return this.getStatus(KafkaHealthService.name, true);
+//     } catch (error: any) {
+//       throw new HealthCheckError(
+//         'Kafka broker cluster partition unreachable',
+//         this.getStatus(KafkaHealthService.name, false, { message: error.message }),
+//       );
+//     }
+//   }
+
+//   async onModuleDestroy() {
+//     try {
+//       await this.admin.disconnect();
+//     } catch {
+//     }
+//   }
+// }

@@ -4,13 +4,13 @@ import {
   HealthCheck, 
   TypeOrmHealthIndicator 
 } from '@nestjs/terminus';
-import { KafkaHealthService, RedisHealthService } from './health.service';
+import { RedisHealthService } from './health.service';
 
 @Controller('health')
 export class HealthController {
   constructor(
     private readonly health: HealthCheckService,
-    private readonly kafkaHealthService : KafkaHealthService,
+    //private readonly kafkaHealthService : KafkaHealthService,
     private readonly redisHealthService : RedisHealthService,
     private readonly db: TypeOrmHealthIndicator,
   ) {}
@@ -27,7 +27,7 @@ export class HealthController {
     return this.health.check([
         () => this.db.pingCheck('postgres'),
         () => this.redisHealthService.isHealthy(),
-        () => this.kafkaHealthService.isHealthy(),
+        //() => this.kafkaHealthService.isHealthy(),
     ]);
   }
 }
