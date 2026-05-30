@@ -2,6 +2,7 @@ import { Controller, Get, HttpCode, HttpStatus, Req, UseGuards } from '@nestjs/c
 import { ApikeyService } from './apikey.service';
 import * as express from 'express';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
+import { User } from 'src/auth/entities/user.entity';
 
 @Controller('apikey')
 export class ApikeyController {
@@ -10,7 +11,7 @@ export class ApikeyController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     async generateApiKey(@Req() request: express.Request){
-        const userId = (request.headers['x-user-id'] || request.headers['X-USER_ID']) as string;
+        const userId = (request.user as User).id;
         return await this.apikeyService.createKey(userId);
     }
 }

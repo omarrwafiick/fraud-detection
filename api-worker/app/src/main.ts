@@ -29,7 +29,7 @@ async function bootstrap() {
   await app.listen(port);
   
   const logger = new Logger('BOOTSTRAP');
-  logger.log(`Api-Worker running as a hybrid engine on port: ${port} [Kafka Consumer Active]`);
+  logger.log(`Api-Worker running as a hybrid engine on port: ${port}`);
 }
 
 function configPipes(app: INestApplication<any>){

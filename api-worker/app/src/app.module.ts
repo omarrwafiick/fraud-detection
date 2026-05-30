@@ -19,6 +19,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { HealthModule } from './health/health.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { JwtModule } from '@nestjs/jwt';
       secret: process.env.JWT_SECRET || 'secure_cluster_token_2026',
       signOptions: { expiresIn: '1d' },
     }),
+    ProfileModule,
   ],
   controllers: [],
   providers: [
