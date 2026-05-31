@@ -19,14 +19,14 @@ export class RulesService {
             }
         });
 
-        return rules.map(role => {
+        return rules.map(rule => {
             return {
-                id: role.id,
-                name: role.name,
-                severity: this.getSeverityString(role.severity).value,
-                isEnabled: role.isEnabled,
-                createdAt: role.createdAt,
-                updatedAt: role.updatedAt,
+                id: rule.id,
+                name: rule.name,
+                severity: this.getSeverityString(rule.severity).value,
+                isEnabled: rule.isEnabled,
+                createdAt: rule.createdAt,
+                updatedAt: rule.updatedAt,
             }
         });
     }
@@ -63,14 +63,19 @@ export class RulesService {
         return newRule.id;
     }
 
-    private getSeverityString(severity: RuleSeverity|string): { key: RuleSeverity|string, value: string } {
-        switch (severity) {
-            case RuleSeverity.MEDIUM || 'MEDIUM':
+    private getSeverityString(
+        severity: RuleSeverity | string,
+    ): { key: RuleSeverity | string; value: string } {
+        switch (String(severity).toUpperCase()) {
+            case 'MEDIUM':
             return { key: RuleSeverity.MEDIUM, value: 'Medium' };
-            case RuleSeverity.HIGH || 'HIGH':
+
+            case 'HIGH':
             return { key: RuleSeverity.HIGH, value: 'High' };
-            case RuleSeverity.CRITICAL || 'CRITICAL':
+
+            case 'CRITICAL':
             return { key: RuleSeverity.CRITICAL, value: 'Critical' };
+
             default:
             return { key: 'Unknown', value: 'Unknown' };
         }
