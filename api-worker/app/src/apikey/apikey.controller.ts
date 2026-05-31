@@ -3,6 +3,7 @@ import { ApikeyService } from './apikey.service';
 import * as express from 'express';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { User } from 'src/auth/entities/user.entity';
+import { IUser } from 'src/auth/interfaces/user.interface';
 
 @Controller('apikey')
 export class ApikeyController {
@@ -11,7 +12,7 @@ export class ApikeyController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     async generateApiKey(@Req() request: express.Request){
-        const userId = (request.user as any).id;
+        const userId = (request.user as IUser).id;
         return await this.apikeyService.createKey(userId);
     }
 }

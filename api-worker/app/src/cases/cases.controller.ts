@@ -5,6 +5,7 @@ import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { GetCaseDto } from './dto/getCases.dto';
 import * as express from 'express';
+import { IUser } from 'src/auth/interfaces/user.interface';
 
 @UseGuards(JwtAuthGuard)
 @Controller('cases')
@@ -16,7 +17,7 @@ export class CasesController {
     async getFraudCasesList(
         @Req() request: express.Request,
     ): Promise<GetCaseDto[]>{
-        const tenantId = (request.user as any).tenantId as number;
+        const tenantId = (request.user as IUser).tenantId as number;
         return await this.casesService.getCases(tenantId);
     }
 

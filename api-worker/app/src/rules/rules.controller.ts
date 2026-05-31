@@ -5,6 +5,7 @@ import { CreateRuleDto } from './dtos/createRule.dto';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { GetRuleDto } from './dtos/getRule.dto';
 import * as express from 'express';
+import { IUser } from 'src/auth/interfaces/user.interface';
 
 @UseGuards(JwtAuthGuard)
 @Controller('rules')
@@ -17,7 +18,7 @@ export class RulesController {
         @Req() request: express.Request,
     ): Promise<GetRuleDto[]>
     {
-        const tenantId = (request.user as any).tenantId as number;
+        const tenantId = (request.user as IUser).tenantId as number;
         return await this.rulesService.getRules(tenantId);
     }
 
