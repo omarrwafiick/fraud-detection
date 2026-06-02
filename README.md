@@ -9,7 +9,7 @@ This ecosystem is built using **NestJS**, structured around a **Trusted Subsyste
 ## 🏗️ Architectural Topology
 
 The system is decoupled into two primary containerized services communicating through a secure, isolated Docker overlay network. Public access is strictly regulated via an edge reverse-proxy layer.
-
+```
                   [ Public Internet Inbound Traffic ]
                                   │
                                   ▼
