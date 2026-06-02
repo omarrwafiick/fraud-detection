@@ -10,17 +10,16 @@ This ecosystem is built using **NestJS**, structured around a **Trusted Subsyste
 
 The system is decoupled into two primary containerized services communicating through a secure, isolated Docker overlay network. Public access is strictly regulated via an edge reverse-proxy layer.
 
-```text
                   [ Public Internet Inbound Traffic ]
                                   │
                                   ▼
                      ┌────────────────────────┐
-                     │   Nginx Edge Router    │ (Port 80 Exposed)
+                     │   Nginx Edge Router    │ (Port 80/443 Exposed)
                      └────────────┬───────────┘
                                   │ (Internal DNS Proxy routing)
                                   ▼
                      ┌────────────────────────┐
-                     │    api-gateway Node    │ (Port 3000 Private)
+                     │   api-gateway Node     │ (Port 3000 Private)
                      └──────┬──────────┬──────┘
                             │          │
          ┌──────────────────┘          └──────────────────┐
@@ -35,10 +34,29 @@ The system is decoupled into two primary containerized services communicating th
                                                           ▼
                                                  ┌─────────────────┐
                                                  │   api-worker    │ (Port 3001 Private)
-                                                 └────────┬────────┘
-                                                          │
-                                                          ▼
-                                                 ┌─────────────────┐
-                                                 │ PostgreSQL DB   │
-                                                 │ (Fraud Ledger)  │
-                                                 └─────────────────┘
+                                                 └──────┬───┬──────┘
+                                                        │   │
+                        ┌───────────────────────────────┘   └───────────────────────────────┐
+                        │ (Dual-Write Relational Ledger)                                    │ (Graph Link Sync & Risk Queries)
+                        ▼                                                                   ▼
+┌────────────────────────────────────────────────┐                 ┌────────────────────────────────────────────────┐
+│              PostgreSQL Database               │                 │                 Neo4j Cluster                  │
+│       (Source of Truth / Fraud Ledger)         │                 │          (Operational Graph Index)             │
+│                                                │                 │                                                │
+│  - Multi-Tenant Schema Partitioning            │                 │  - Multi-Tenant Structural Sub-Graphs          │
+│  - Transaction States (APPROVED/REJECTED)      │                 │  - High-Speed Hop Traversal BFS                │
+│  - Tenant Profiles, Custom Rules & Cases Table │                 │  - Cycle Detection & Entity Fingerprinting     │
+└────────────────────────────────────────────────┘                 └────────────────────────────────────────────────┘
+                        │                                                                   │
+                        └───────────────────────────────┐   ┌───────────────────────────────┘
+                                                        │   │
+                                                        ▼   ▼
+                                             ┌─────────────────────┐
+                                             │ NestJS Event Bus    │ (Internal Async Decoupling)
+                                             │   (EventEmitter2)   │
+                                             └──────────┬──────────┘
+                                                        │
+                                                        ▼
+                                             ┌─────────────────────┐
+                                             │   AlertsListener    │ ──> [ Creates Cases / Dashboard Records ]
+                                             └─────────────────────┘ ──> [ Dispatches Merchant Webhooks / Slack ]
