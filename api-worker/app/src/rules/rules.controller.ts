@@ -6,6 +6,7 @@ import { CacheInterceptor } from '@nestjs/cache-manager';
 import { GetRuleDto } from './dtos/getRule.dto';
 import * as express from 'express';
 import { IUser } from 'src/auth/interfaces/user.interface';
+import { RequestPaginatorDto } from 'src/common/dtos/request-paginator.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('rules')
@@ -17,13 +18,14 @@ export class RulesController {
     @HttpCode(HttpStatus.OK)
     async getRules(
         @Req() request: express.Request,
+        @Body() payload: RequestPaginatorDto,
     ): Promise<GetRuleDto[]>
     {
         const tenantId = (request.user as IUser).tenantId as number;
         if(!tenantId){
             throw new UnauthorizedException("Tenant ID not found in user context");
         }
-        return await this.rulesService.getRules(tenantId);
+        return await this.rulesService.getRules(tenantId, payload);
     }
 
     @Post("")

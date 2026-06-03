@@ -6,6 +6,7 @@ import { CacheInterceptor } from '@nestjs/cache-manager';
 import { GetCaseDto } from './dto/getCases.dto';
 import * as express from 'express';
 import { IUser } from 'src/auth/interfaces/user.interface';
+import { RequestPaginatorDto } from 'src/common/dtos/request-paginator.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('cases')
@@ -17,12 +18,13 @@ export class CasesController {
     @HttpCode(HttpStatus.OK)
     async getFraudCasesList(
         @Req() request: express.Request,
+        @Body() payload: RequestPaginatorDto,
     ): Promise<GetCaseDto[]>{
         const tenantId = (request.user as IUser).tenantId as number;
         if(!tenantId){
             throw new UnauthorizedException("Tenant ID not found in user context");
         }
-        return await this.casesService.getCases(tenantId);
+        return await this.casesService.getCases(tenantId, payload);
     }
 
     @Patch(":id")
