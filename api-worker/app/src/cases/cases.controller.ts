@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Req, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Req, UnauthorizedException, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CasesService } from './cases.service';
 import { UpdateCaseDto } from './dto/updateCase.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
@@ -18,6 +18,9 @@ export class CasesController {
         @Req() request: express.Request,
     ): Promise<GetCaseDto[]>{
         const tenantId = (request.user as IUser).tenantId as number;
+        if(!tenantId){
+            throw new UnauthorizedException("Tenant ID not found in user context");
+        }
         return await this.casesService.getCases(tenantId);
     }
 

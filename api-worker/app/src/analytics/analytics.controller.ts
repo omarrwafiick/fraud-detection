@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Req, UnauthorizedException, UseGuards, UseInterceptors } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { AnalyticsService } from './analytics.service';
 import { AnalyticsSummaryResponseDto } from './dtos/analyticsVolumeSummary.dto';
@@ -17,6 +17,9 @@ export class AnalyticsController {
         @Req() request: express.Request,
     ): Promise<AnalyticsSummaryResponseDto>{
         const tenantId = (request.user as IUser).tenantId;
+        if(!tenantId){
+            throw new UnauthorizedException("Tenant ID not found in user context");
+        }
         return await this.analyticsService.getSummary(tenantId);
     }
 }

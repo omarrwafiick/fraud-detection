@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Req } from '@nestjs/common';
+import { Controller, Get, Param, Req, UnauthorizedException } from '@nestjs/common';
 import { GraphService } from './graph.service';
 import * as express from 'express';
 import { IUser } from 'src/auth/interfaces/user.interface';
@@ -13,6 +13,9 @@ export class GraphController {
         @Param() accountId: string,
     ){
         const tenantId = (request.user as IUser).tenantId;
+        if(!tenantId){
+            throw new UnauthorizedException("Tenant ID not found in user context");
+        }
         return await this.graphService.getAccountNetwork(tenantId, accountId);
     }
     //Commented this endpoint out as it can exhaust your Neo4j connection pool as user refresh the UI
@@ -23,6 +26,9 @@ export class GraphController {
     //     @Param() accountId: string,
     // ){
     //     const tenantId = (request.user as IUser).tenantId;
+    //     if(!tenantId){
+    //         throw new UnauthorizedException("Tenant ID not found in user context");
+    //     }
     //     return await this.graphService.getDegreesOfSeparationFromFraud(tenantId, accountId);
     // }
 

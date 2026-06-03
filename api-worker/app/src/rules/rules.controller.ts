@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UnauthorizedException, UseGuards, UseInterceptors } from '@nestjs/common';
 import { RulesService } from './rules.service';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { CreateRuleDto } from './dtos/createRule.dto';
@@ -19,6 +19,9 @@ export class RulesController {
     ): Promise<GetRuleDto[]>
     {
         const tenantId = (request.user as IUser).tenantId as number;
+        if(!tenantId){
+            throw new UnauthorizedException("Tenant ID not found in user context");
+        }
         return await this.rulesService.getRules(tenantId);
     }
 
