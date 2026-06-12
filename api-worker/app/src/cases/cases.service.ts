@@ -48,11 +48,12 @@ export class CasesService {
         });
     }
 
-    async updateCase(id: number, payload: UpdateCaseDto): Promise<boolean>{
+    async updateCase(id: number, tenantId: number, payload: UpdateCaseDto): Promise<boolean>{
         try {
             const caseEntity = await this.repository.findOne({
                 where: {
-                    id
+                    id,
+                    tenantId
                 }
             });
 

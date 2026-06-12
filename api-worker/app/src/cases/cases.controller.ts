@@ -30,10 +30,15 @@ export class CasesController {
     @Patch(":id")
     @HttpCode(HttpStatus.OK)
     async updateCase(
+        @Req() request: express.Request,
         @Param() id: number, 
         @Body() payload: UpdateCaseDto
     ): Promise<{ isUpdated: boolean }>{
-        const isUpdated = await this.casesService.updateCase(id, payload);
+        const tenantId = (request.user as IUser).tenantId as number;
+        if(!tenantId){
+            throw new UnauthorizedException("Tenant ID not found in user context");
+        }
+        const isUpdated = await this.casesService.updateCase(id, tenantId, payload);
         return { isUpdated }
     }
 }
