@@ -1,4 +1,4 @@
-import { Controller, All, Req, Res, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, All, Req, Res, HttpCode, HttpStatus, Get } from '@nestjs/common';
 import * as express from 'express';
 import { ApiService, AllowedMethods } from './api.service';
 
